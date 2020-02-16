@@ -34,23 +34,22 @@ response = requests.get(url='https://api.investfly.com/stockmarket/quote?symbol=
 tsla_price = json.loads(response.text)['lastPrice']     # current price
 
 # Execute trade if prices satisfy criterion
-# if (tsla_price_1 - tsla_price_2) / tsla_price_2 <= -0.05 and \
-#         0 > (tsla_price_0 - tsla_price_1) / tsla_price_1 >= -0.02 and tsla_price - tsla_price_0 > 0:
-if True:    # Remove once bug is fixed
+if (tsla_price_1 - tsla_price_2) / tsla_price_2 <= -0.05 and \
+        0 > (tsla_price_0 - tsla_price_1) / tsla_price_1 >= -0.02 and tsla_price - tsla_price_0 > 0:
     headers_copy = dict(headers)
+    security = {'symbol': 'TSLA',
+                'securityType': 'STOCK',
+                'market': 'US'}
     trade_headers = {'tradeType': 'BUY',
                      'orderType': 'MARKET_ORDER',
                      'quantity': '50',
                      'brokerType': 'INVESTFLY',
-                     'security': json.dumps({
-                         'symbol': 'TSLA',
-                         'securityType': 'STOCK',
-                         'market': 'US'})
+                     'security': security
                      }
-    trade_headers = {**headers_copy, **trade_headers}
+    trade_headers_json = json.dumps(trade_headers)
     portfolio_id = '1465449'
     response = requests.post(url='https://api.investfly.com/portfolio/Investfly/' + portfolio_id + '/trade?market=US',
-                             headers=trade_headers)
+                             headers=headers, data=trade_headers_json)
     print(trade_headers)
     print(json.loads(response.text))
 
